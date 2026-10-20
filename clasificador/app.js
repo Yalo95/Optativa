@@ -1,5 +1,5 @@
 // Carpeta del modelo exportado desde Teachable Machine
-const URL = "./model/";
+const URL = "./my_model/";
 
 let model, webcam, maxPredictions;
 let webcamActiva = false;

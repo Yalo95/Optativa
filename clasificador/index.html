@@ -1,28 +1,27 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="styles.css">
-  <title>Teachable Machine - Clasificador de imágenes</title>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Teachable Machine - Clasificador de imágenes</title>
+  </head>
+  <body>
 
-  <h1>Teachable Machine Image Model</h1>
-  <div id="status">Cargando modelo...</div>
+    <h1>Teachable Machine Image Model</h1>
+    <div id="status">Cargando modelo...</div>
 
-  <div class="botones">
-    <label for="imageUpload" class="boton-subir deshabilitado" id="upload-btn">📁 Subir imagen</label>
-    <input type="file" id="imageUpload" accept="image/*" disabled>
-    <button type="button" id="webcam-btn" disabled>📷 Usar webcam</button>
-  </div>
+    <div class="botones">
+      <label for="imageUpload" class="boton-subir deshabilitado" id="upload-btn">📁 Subir imagen</label>
+      <input type="file" id="imageUpload" accept="image/*" disabled>
+      <button type="button" id="webcam-btn" disabled>📷 Usar webcam</button>
+    </div>
 
-  <div id="preview"><span style="color:#999">Sin imagen</span></div>
-  <div id="label-container"></div>
+    <div id="preview"><span style="color:#999">Sin imagen</span></div>
+    <div id="label-container"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
-  <script src="script.js"></script>
-</body>
-</html>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+    <script src="script.js"></script>
+  </body>
 </html>
