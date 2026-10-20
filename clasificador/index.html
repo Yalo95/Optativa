@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Clasificador Facial Dual</title>
+</head>
+<body>
+    <h1>Clasificador Facial (Webcam e Imágenes)</h1>
+
+    <!-- SECCIÓN 1: WEBCAM EN VIVO -->
+    <div class="seccion">
+        <h2>1. Usar Webcam en Vivo</h2>
+        <button type="button" onclick="iniciarWebcam()">Iniciar Cámara</button>
+        <br><br>
+        <div id="webcam-container"></div>
+        <div id="label-container-webcam"></div>
+    </div>
+
+    <!-- SECCIÓN 2: SUBIR IMAGEN LOCAL -->
+    <div class="seccion">
+        <h2>2. Subir Imagen Local</h2>
+        <input type="file" id="selector-imagen" accept="image/*">
+        <br><br>
+        <img id="vista-previa" alt="Vista previa" style="max-width: 250px; display:none; border-radius: 4px;">
+        <div id="resultado-div-imagen"></div>
+    </div>
+
+    <!-- Librerías de TensorFlow y Teachable Machine -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+    
+    <!-- Tu archivo de lógica unificada -->
+    <script src="app.js"></script>
+</body>
+</html>
