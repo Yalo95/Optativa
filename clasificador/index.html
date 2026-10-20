@@ -1,27 +1,90 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
-    <title>Teachable Machine - Clasificador de imágenes</title>
-  </head>
-  <body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clasificador de Imágenes AI</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
 
-    <h1>Teachable Machine Image Model</h1>
-    <div id="status">Cargando modelo...</div>
+  <div class="app-container">
+    <header class="app-header">
+      <h1>Clasificador de Imágenes AI</h1>
+      <p id="status" class="status-badge">Cargando modelo...</p>
+    </header>
 
-    <div class="botones">
-      <label for="imageUpload" class="boton-subir deshabilitado" id="upload-btn">📁 Subir imagen</label>
-      <input type="file" id="imageUpload" accept="image/*" disabled>
-      <button type="button" id="webcam-btn" disabled>📷 Usar webcam</button>
-    </div>
+    <main class="app-content">
+      <!-- Panel de Controles -->
+      <section class="card panel-controles">
+        <h2>Controles</h2>
+        
+        <div class="control-group">
+          <label for="threshold">Umbral de coincidencia mínimo (%):</label>
+          <div class="range-container">
+            <input type="range" id="threshold" min="0" max="100" value="70">
+            <span id="threshold-val">70%</span>
+          </div>
+        </div>
 
-    <div id="preview"><span style="color:#999">Sin imagen</span></div>
-    <div id="label-container"></div>
+        <div class="botones-grid">
+          <button type="button" id="start-btn" class="btn btn-primary" disabled>▶️ Iniciar Webcam</button>
+          <button type="button" id="stop-btn" class="btn btn-danger" disabled>⏹️ Detener Webcam</button>
+          
+          <label for="imageUpload" class="btn btn-secondary disabled" id="upload-label">
+            📁 Subir imagen
+          </label>
+          <input type="file" id="imageUpload" accept="image/*" disabled hidden>
+        </div>
+      </section>
 
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
-    <script src="script.js"></script>
-  </body>
+      <!-- Panel de Vista Previa y Resultados -->
+      <div class="grid-2-col">
+        <section class="card preview-card">
+          <h2>Vista previa</h2>
+          <div id="preview" class="preview-box">
+            <span class="placeholder-text">Sin imagen cargada</span>
+          </div>
+          <!-- Mensaje de salida personalizado -->
+          <div id="mensaje-salida" class="mensaje-salida hide"></div>
+        </section>
+
+        <section class="card results-card">
+          <h2>Predicciones en vivo</h2>
+          <div id="label-container" class="label-container"></div>
+        </section>
+      </div>
+
+      <!-- Panel de Historial -->
+      <section class="card historial-card">
+        <div class="historial-header">
+          <h2>Histórico de Resultados</h2>
+          <button type="button" id="clear-history-btn" class="btn btn-sm btn-outline">Limpiar Historial</button>
+        </div>
+        <div class="table-responsive">
+          <table class="historial-tabla">
+            <thead>
+              <tr>
+                <th>Hora</th>
+                <th>Clase Detectada</th>
+                <th>Confianza</th>
+                <th>Origen</th>
+              </tr>
+            </thead>
+            <tbody id="historial-body">
+              <tr id="empty-history-row">
+                <td colspan="4" class="text-center text-muted">No hay detecciones registradas superiores al umbral.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Scripts de Teachable Machine -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+  <script src="app.js"></script>
+</body>
 </html>
