@@ -1,92 +1,115 @@
+// Carpeta del modelo exportado desde Teachable Machine
 const URL = "./model/";
-let model, maxPredictions;
-let webcam; 
-let labelContainer;
 
-// Referencias a los elementos del DOM (tanto para la webcam como para las imágenes)
-const selectorImagen = document.getElementById('selector-imagen');
-const vistaPrevia = document.getElementById('vista-previa');
-const resultadoDiv = document.getElementById('resultado-div');
+let model, webcam, maxPredictions;
+let webcamActiva = false;
+let animacionId = null;
 
-// 1. Cargar el modelo e iniciar la webcam (o puedes separar la inicialización)
-async function init() {
-    try {
-        const modelURL = URL + "model.json";
-        const metadataURL = URL + "metadata.json";
-        model = await tmImage.load(modelURL, metadataURL);
-        maxPredictions = model.getTotalClasses();
-        console.log("Modelo cargado correctamente");
-    } catch(error) {
-        console.error("Error al cargar el modelo:", error);
-        alert("Error al cargar el modelo. Verifica que la carpeta './model/' contenga los archivos necesarios.");
-        return; // Detenemos la ejecución si el modelo falla
-    }
+const preview = document.getElementById("preview");
+const labelContainer = document.getElementById("label-container");
+const statusEl = document.getElementById("status");
+const uploadInput = document.getElementById("imageUpload");
+const uploadBtn = document.getElementById("upload-btn");
+const webcamBtn = document.getElementById("webcam-btn");
 
-    // Configurar y arrancar la webcam
-    try {
-        const flip = true; 
-        webcam = new tmImage.Webcam(200, 200, flip); 
-        await webcam.setup(); 
-        await webcam.play();
-        window.requestAnimationFrame(loop);
+// Cargar el modelo al abrir la página
+async function cargarModelo() {
+  try {
+    model = await tmImage.load(URL + "model.json", URL + "metadata.json");
+    maxPredictions = model.getTotalClasses();
 
-        // Añadir el canvas de la webcam al HTML
-        document.getElementById("webcam-container").appendChild(webcam.canvas);
-        
-        // Crear los contenedores de etiquetas para la webcam
-        labelContainer = document.getElementById("label-container");
-        labelContainer.innerHTML = "";
-        for (let i = 0; i < maxPredictions; i++) {
-            labelContainer.appendChild(document.createElement("div"));
-        }
-    } catch(error) {
-        console.error("No se pudo iniciar la webcam:", error);
-        alert("Asegúrate de dar permisos a la cámara.");
-    }
-}
-
-// Bucle de actualización de la webcam
-async function loop() {
-    webcam.update(); 
-    await predictWebcam();
-    window.requestAnimationFrame(loop);
-}
-
-// Predicción continua para la webcam
-async function predictWebcam() {
-    const prediction = await model.predict(webcam.canvas);
+    // Crear barras para cada clase
+    const nombres = model.getClassLabels();
     for (let i = 0; i < maxPredictions; i++) {
-        const classPrediction = prediction[i].className + ": " + (prediction[i].probability * 100).toFixed(2) + "%";
-        labelContainer.childNodes[i].innerHTML = classPrediction;
+      const div = document.createElement("div");
+      div.className = "clase";
+      div.innerHTML = `
+        <div class="clase-nombre"><span>${nombres[i]}</span><span class="valor">0%</span></div>
+        <div class="barra"><div class="relleno"></div></div>`;
+      labelContainer.appendChild(div);
     }
+
+    statusEl.textContent = "Modelo cargado. Sube una imagen o activa la webcam.";
+    uploadInput.disabled = false;
+    uploadBtn.classList.remove("deshabilitado");
+    webcamBtn.disabled = false;
+  } catch (e) {
+    statusEl.textContent = "Error al cargar el modelo. Revisa la ruta y usa un servidor local.";
+    console.error(e);
+  }
 }
 
+// Mostrar predicciones
+async function predict(elemento) {
+  const prediction = await model.predict(elemento);
+  for (let i = 0; i < maxPredictions; i++) {
+    const prob = prediction[i].probability;
+    const fila = labelContainer.childNodes[i];
+    fila.querySelector(".valor").textContent = (prob * 100).toFixed(1) + "%";
+    fila.querySelector(".relleno").style.width = (prob * 100) + "%";
+  }
+}
 
-// --- 2. LÓGICA PARA SUBIR IMAGEN DESDE UN ARCHIVO ---
-selectorImagen.addEventListener('change', function(evento) {
-    const archivos = evento.target.files;
-    if (archivos.length === 0) return;
+// ---- Subir imagen ----
+uploadInput.addEventListener("change", (event) => {
+  const archivo = event.target.files[0];
+  if (!archivo) return;
 
-    const archivo = archivos[0];
-    const lector = new FileReader();
-    
-    lector.onload = function(e) {
-        vistaPrevia.style.display = 'block';
-        vistaPrevia.src = e.target.result;
-    }
-    lector.readAsDataURL(archivo);
+  if (webcamActiva) detenerWebcam();
+
+  const img = new Image();
+  img.onload = async () => {
+    preview.innerHTML = "";
+    preview.appendChild(img);
+    await predict(img);
+  };
+  img.src = window.URL.createObjectURL(archivo);
+  uploadInput.value = ""; // permite volver a subir la misma imagen
 });
 
-// Cuando la imagen cargada se dibuje en pantalla, ejecutamos la predicción estática
-async function ejecutarPrediccion() {
-   const prediction = await model.predict(vistaPrevia);
-   let mejorPrediccion = { className: "", probability: 0 };
-   
-   for (let i = 0; i < maxPredictions; i++) {
-        if (prediction[i].probability > mejorPrediccion.probability) {
-            mejorPrediccion = prediction[i];
-        }
-    }
-    let htmlContenido = `<br>Predicción: ${mejorPrediccion.className} ${mejorPrediccion.probability}</span>`;
-    resultadoDiv.innerHTML = htmlContenido;
+// ---- Webcam ----
+webcamBtn.addEventListener("click", async () => {
+  if (webcamActiva) {
+    detenerWebcam();
+  } else {
+    await iniciarWebcam();
+  }
+});
+
+async function iniciarWebcam() {
+  try {
+    const flip = true;
+    webcam = new tmImage.Webcam(300, 300, flip);
+    await webcam.setup();
+    await webcam.play();
+
+    preview.innerHTML = "";
+    preview.appendChild(webcam.canvas);
+
+    webcamActiva = true;
+    webcamBtn.textContent = "⏹ Detener webcam";
+    webcamBtn.classList.add("activa");
+    loop();
+  } catch (e) {
+    statusEl.textContent = "No se pudo acceder a la webcam.";
+    console.error(e);
+  }
 }
+
+async function loop() {
+  if (!webcamActiva) return;
+  webcam.update();
+  await predict(webcam.canvas);
+  animacionId = window.requestAnimationFrame(loop);
+}
+
+function detenerWebcam() {
+  webcamActiva = false;
+  if (animacionId) cancelAnimationFrame(animacionId);
+  if (webcam) webcam.stop();
+  preview.innerHTML = '<span style="color:#999">Sin imagen</span>';
+  webcamBtn.textContent = "📷 Usar webcam";
+  webcamBtn.classList.remove("activa");
+}
+
+cargarModelo();

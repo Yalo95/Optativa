@@ -1,3 +1,44 @@
-body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f9; }
-.seccion { background: rgb(124, 135, 236); padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-h2 { color: #292828; }
+body {
+      font-family: system-ui, Arial, sans-serif;
+      background: #f4f6f8;
+      color: #222;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      margin: 0;
+    }
+    h1 { font-size: 1.5rem; margin-bottom: 10px; }
+    #status { margin-bottom: 15px; color: #666; font-size: 0.9rem; }
+    .botones { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; }
+    button, .boton-subir {
+      background: #1a73e8;
+      color: #fff;
+      border: none;
+      padding: 12px 20px;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover, .boton-subir:hover { background: #1558b0; }
+    button:disabled, .boton-subir.deshabilitado { background: #9bb8e0; cursor: not-allowed; }
+    #webcam-btn.activa { background: #d93025; }
+    #imageUpload { display: none; }
+    #preview {
+      width: 300px;
+      height: 300px;
+      background: #fff;
+      border: 2px dashed #ccc;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    #preview img, #preview canvas { max-width: 100%; max-height: 100%; }
+    #label-container { width: 300px; }
+    .clase { margin-bottom: 8px; }
+    .clase-nombre { display: flex; justify-content: space-between; font-size: 0.95rem; margin-bottom: 3px; }
+    .barra { background: #e0e0e0; border-radius: 5px; height: 12px; overflow: hidden; }
+    .relleno { background: #1a73e8; height: 100%; width: 0%; transition: width 0.15s; }
