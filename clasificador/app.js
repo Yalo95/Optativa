@@ -78,21 +78,15 @@ selectorImagen.addEventListener('change', function(evento) {
 });
 
 // Cuando la imagen cargada se dibuje en pantalla, ejecutamos la predicción estática
-vistaPrevia.onload = async function() {
-    if (!model) {
-        resultadoDiv.innerHTML = "El modelo aún se está cargando...";
-        return;
-    }
-
-    const prediction = await model.predict(vistaPrevia);
-    let mejorPrediccion = { className: "", probability: 0 };
-    
-    for (let i = 0; i < maxPredictions; i++) {
+async function ejecutarPrediccion() {
+   const prediction = await model.predict(vistaPrevia);
+   let mejorPrediccion = { className: "", probability: 0 };
+   
+   for (let i = 0; i < maxPredictions; i++) {
         if (prediction[i].probability > mejorPrediccion.probability) {
             mejorPrediccion = prediction[i];
         }
     }
-
-    const porcentaje = (mejorPrediccion.probability * 100).toFixed(2);
-    resultadoDiv.innerHTML = `<br><strong>Predicción de la imagen:</strong> ${mejorPrediccion.className} (${porcentaje}%)`;
-};
+    let htmlContenido = `<br>Predicción: ${mejorPrediccion.className} ${mejorPrediccion.probability}</span>`;
+    resultadoDiv.innerHTML = htmlContenido;
+}
